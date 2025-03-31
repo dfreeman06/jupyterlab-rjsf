@@ -2,7 +2,8 @@ import * as React from 'react';
 
 /* order might matter on these imports */
 /* first core... */
-import { utils as rjsfUtils } from '@rjsf/core';
+import { getDefaultRegistry } from '@rjsf/core';
+import { retrieveSchema } from '@rjsf/utils';
 
 /* ...then lib imports */
 import _ObjectField from '@rjsf/core/lib/components/fields/ObjectField';
@@ -25,7 +26,7 @@ export function makeJSONObjectField(ObjectField: typeof _ObjectField) {
    * A raw JSON Object which can be stored/edited inside an RJSF
    */
   class JSONObjectField extends ObjectField {
-    protected _editor: CodeMirror.Editor;
+    protected _editor: CodeMirror.EditorView;
 
     render() {
       const {
@@ -33,10 +34,10 @@ export function makeJSONObjectField(ObjectField: typeof _ObjectField) {
         formData,
         idSchema,
         name,
-        registry = rjsfUtils.getDefaultRegistry(),
+        registry = getDefaultRegistry(),
       } = this.props;
       const { definitions } = registry;
-      const schema = (rjsfUtils as any).retrieveSchema(
+      const schema = retrieveSchema(
         this.props.schema,
         definitions,
         formData
@@ -101,14 +102,16 @@ export function makeJSONObjectField(ObjectField: typeof _ObjectField) {
     }
 
     onReset = () => {
-      this._editor.getDoc().setValue(JSON.stringify(this.props.formData, null, 2));
+      this._editor.dispatch({
+        changes: {from: 0, to: this._editor.state.doc.length, insert: JSON.stringify(this.props.formData, null, 2)}
+      })        
     };
 
     onSave = () => {
       this.props.onChange(this.state.editorValue);
     };
 
-    onChange = (editor: CodeMirror.Editor, data: any, value: string) => {
+    onChange = (editor: CodeMirror.EditorView, data: any, value: string) => {
       try {
         const jsonValue = JSON.parse(value);
         this.setState({ editorValue: jsonValue, editorError: false });

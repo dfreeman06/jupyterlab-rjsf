@@ -1,0 +1,150 @@
+[project]
+authors = ["LabShare"]
+channels = ["conda-forge"]
+description = "React JSON Schema Form for JupyterLab"
+name = "jupyterlab_rjsf"
+platforms = ["linux-64"]
+version = "1.1.1"
+
+[system-requirements]
+linux = "4.18"
+libc = { family = "glibc", version = "2.17" }
+
+
+[tasks]
+dev = { depends-on = ["pip-dev", "lab"] }
+build = { depends-on = ["clean-js-lib", "build-js-lib", "build-lib"] }
+test = { depends-on = ["pytest"] }
+release = { depends-on = ["build", "release-lib"] }
+all = { depends-on = ["build", "test", "release"] }
+
+
+#### Dev ####
+[feature.tasks-dev.tasks.pip-dev]
+cmd = "pixi run -e dev pip-"
+description = "install jupyterlab_rjsf in dev environment"
+inputs = ["**/pyproject.toml"]
+
+[feature.tasks-dev.tasks.lab]
+cmd = "jupyter lab --no-browser"
+depends-on = ["pip-dev"]
+description = "start jupyter lab"
+
+#### Test ####
+[feature.tasks-test.tasks.pytest]
+cmd = "pytest tests"
+depends-on = ["pip-test"]
+inputs = ["{jupyterlab_rjsf,tests}/**/*.py", "pyproject.toml", "recipes"]
+description = "run tests"
+
+[feature.tasks-test.tasks.pip-test]
+cmd = "pixi run -e test pip-"
+description = "install jupyterlab_rjsf in test environment"
+inputs = ["pyproject.toml"]
+
+#### Build ####
+[feature.tasks-build.tasks.setup-js]
+cmd = """jlpm"""
+inputs = [".yarnrc.yml", "package.json", "yarn.lock"]
+outputs = ["yarn.lock", "node_modules/.yarn-state.yml"]
+
+[tasks.labext-develop--]
+cmd = "jupyter labextension develop --overwrite ."
+
+[feature.tasks-dev.tasks.dev-ext]
+cmd = """pixi r -e dev labext-develop--"""
+depends-on = ["pip-dev", "build-js-ext"]
+
+
+[feature.tasks-build.tasks.build-js-ext]
+cmd = "jlpm build:labextension:dev"
+depends-on = ["setup-js", "build-js-lib"]
+inputs = [
+  "node_modules/.yarn-state.yml",
+  "style/",
+  "package.json",
+  "lib/.tsbuildinfo",
+  "webpack.config.js",
+]
+outputs = ["jupyterlab_rjsf/labextension/package.json"]
+
+[feature.tasks-dev.tasks.watch-js]
+depends-on = ["setup-js", "dev-ext"]
+cmd = "jlpm watch"
+
+[feature.tasks-build.tasks.build-js-lib]
+cmd = "jlpm build:lib"
+depends-on = ["setup-js", "clean-js-lib"]
+inputs = [
+  "package.json",
+  "src/",
+  "node_modules/.yarn-state.yml",
+]
+outputs = ["lib", "lib/.tsbuildinfo"]
+
+[feature.tasks-build.tasks.clean-js-lib]
+cmd = "jlpm clean:all"
+depends-on = ["setup-js"]
+
+[feature.tasks-build.tasks.build-lib]
+cmd = "mkdir -p dist && hatchling build"
+inputs = ["**/*.py", "{readme.md,LICENSE,pyproject.toml}"]
+outputs = ["dist/"]
+
+[feature.tasks-release.tasks.release-lib]
+cmd = """
+rattler-build build
+  --verbose
+  --output-dir dist/conda-bld
+  --channel conda-forge
+  --recipe recipes/jupyterlab_rjsf.yaml
+"""
+inputs = [
+    "src/**/*.py",
+    "{readme.md,LICENSE,pyproject.toml}",
+    "recipes/jupyterlab_rjsf.yaml",
+]
+outputs = ["dist/conda-bld/noarch"]
+
+
+[tasks.pip-]
+cmd = """
+python -m pip install -e .
+&& python -m pip check
+"""
+
+
+#### Dependencies ####
+[feature.lab-deps.dependencies]
+jupyterlab = "*"
+
+[feature.dev-deps.dependencies]
+python = "3.10.*"
+pip = "*"
+jupyterlab = "*"
+pandas = "*"
+ipywidgets = "*"
+
+[feature.build-deps.dependencies]
+nodejs = "22.*"
+hatchling = ">=1.5,<2"
+hatch-jupyter-builder = ">=0.5"
+hatch-nodejs-version = ">=0.3.2"
+
+[feature.release-deps.dependencies]
+rattler-build = "*"
+
+[feature.test-deps.dependencies]
+nbmake = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-html = "*"
+pytest-mock = "*"
+anyio = "*"
+
+
+[environments]
+build = ["tasks-build", "dev-deps", "build-deps"]
+dev = ["tasks-dev", "dev-deps", "lab-deps", "build-deps"]
+release = ["tasks-release", "release-deps", "build-deps", "dev-deps"]
+test = ["tasks-test", "test-deps", "dev-deps"]

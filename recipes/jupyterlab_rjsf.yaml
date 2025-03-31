@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+context:
+  name: jupyterlab_rjsf
+  version: 1.1.1 
+
+
+package:
+  name: '${{ name }}'
+  version: '${{ version }}'
+
+source:
+  path: '../dist/jupyterlab_rjsf-${{version}}.tar.gz'
+
+build:
+  noarch: python
+  script:
+    - 'python -m pip install . '
+
+requirements:
+  host:
+    - hatchling >=1.5,<2
+    - pip
+    - python >=3.10
+    - hatch-jupyter-builder
+    - hatch-nodejs-version
+  run:
+    - jupyterlab
+    - ipywidgets
+    - pluggy
+    - jupyterlab_widgets
+    - ipython
+
+
+tests:
+  - python:
+      imports: [jupyterlab_rjsf]
+  - script: pip check
+
+about:
+  homepage: https://github.com/PolusAI/jupyterlab-rjsf.git
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: |-
+    React JSON Schema Form for JupyterLab.

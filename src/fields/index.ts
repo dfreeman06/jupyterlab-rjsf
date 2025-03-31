@@ -2,7 +2,7 @@
  * An unfortunately very convoluted way to expose some custom react components
  * in the face of federated modules
  */
-import { FormProps, utils } from '@rjsf/core';
+import { FormProps, getDefaultRegistry } from '@rjsf/core';
 
 /**
  * a subset of an RJSF `widgets` prop
@@ -42,7 +42,7 @@ export const CodeMirrorField = async () =>
 export const MarkdownField = async () => (await import('./markdown')).MarkdownField;
 export const XMLField = async () => (await import('./xml')).XMLField;
 export const JSONObjectField = async () => {
-  const reg = utils.getDefaultRegistry();
+  const reg = getDefaultRegistry();
   return (await import('./jsonobject')).makeJSONObjectField(
     reg.fields['ObjectField'] as any
   );

@@ -1,4 +1,3 @@
-export * from './async-component';
 export * from './form';
 export * from './schemaform';
 export * from './schemaform/model';

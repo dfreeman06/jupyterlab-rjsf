@@ -1,3 +1,10 @@
 lib/
 node_modules/
 package-lock.json
+.pixi
+.yarn
+build
+jupyterlab_rjsf/labextension/
+dist/
+.ipynb_checkpoints
+Untitled*.ipynb

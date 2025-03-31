@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { UnControlled } from 'react-codemirror2';
-
+import * as CodeMirror from 'codemirror';
 export function CodeMirrorField(props: any) {
   const { options } = props;
 
@@ -10,7 +10,7 @@ export function CodeMirrorField(props: any) {
     ...(options?.cmOptions || {}),
   };
 
-  const onChange = (editor: CodeMirror.Editor, data: any, value: string) => {
+  const onChange = (editor: CodeMirror.EditorView, data: any, value: string) => {
     props.onChange(value);
   };
 

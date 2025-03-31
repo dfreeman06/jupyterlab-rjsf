@@ -1,5 +1,5 @@
 import * as rjsf from '@rjsf/core';
-
+import {RJSFValidationError, RJSFSchema} from "@rjsf/utils";
 import { Signal } from '@lumino/signaling';
 import { JSONObject, JSONValue } from '@lumino/coreutils';
 import { VDomModel } from '@jupyterlab/apputils';
@@ -7,7 +7,7 @@ import { RenderedMarkdown } from '@jupyterlab/rendermime';
 
 export class SchemaFormModel<T extends JSONValue> extends VDomModel {
   constructor(
-    schema: JSONObject,
+    schema: RJSFSchema,
     props?: Partial<rjsf.FormProps<T>>,
     options?: SchemaFormModel.IOptions
   ) {
@@ -29,7 +29,7 @@ export class SchemaFormModel<T extends JSONValue> extends VDomModel {
   /**
    * Get the validation errors for the current form, as defined by the schema
    */
-  get errors(): rjsf.AjvError[] {
+  get errors(): RJSFValidationError[] {
     return this._errors;
   }
 
@@ -38,7 +38,7 @@ export class SchemaFormModel<T extends JSONValue> extends VDomModel {
    *
    * This should be considered read-only (to be written by the form onChange)
    */
-  set errors(errors: rjsf.AjvError[]) {
+  set errors(errors: RJSFValidationError[]) {
     this._errors = errors;
     this.stateChanged.emit(void 0);
   }
@@ -61,7 +61,7 @@ export class SchemaFormModel<T extends JSONValue> extends VDomModel {
   /**
    * Get the (potentially invalid) form as validated by the schema
    */
-  get schema(): JSONObject {
+  get schema(): RJSFSchema {
     return this._schema;
   }
 
@@ -130,8 +130,8 @@ export class SchemaFormModel<T extends JSONValue> extends VDomModel {
   }
 
   private _formData: T;
-  private _errors: rjsf.AjvError[] = [];
-  private _schema: JSONObject;
+  private _errors: RJSFValidationError[] = [];
+  private _schema: RJSFSchema;
   private _props: Partial<rjsf.FormProps<T>>;
   private _errorsObserved = false;
   private _rendered = new Signal<SchemaFormModel<T>, void>(this);

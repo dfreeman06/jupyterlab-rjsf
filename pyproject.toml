@@ -1,0 +1,113 @@
+[build-system]
+requires = [
+  "hatchling>=1.5.0",
+  "jupyterlab>=4.1.0,<5",
+  "hatch-nodejs-version>=0.3.2",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "jupyterlab_rjsf"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+classifiers = [
+  "Framework :: Jupyter",
+  "Framework :: Jupyter :: JupyterLab",
+  "Framework :: Jupyter :: JupyterLab :: 4",
+  "Framework :: Jupyter :: JupyterLab :: Extensions",
+  "Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt",
+  "License :: OSI Approved :: BSD License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+
+dependencies = [
+  "jupyterlab>=4.3",
+  "ipywidgets>=8.1.5",
+  "ipython>=8.32",
+  "jupyterlab_widgets>=3.0.11",
+  "pluggy~=1.5",
+]
+dynamic = ["version", "description", "authors", "urls", "keywords"]
+
+[project.optional-dependencies]
+dev = ["hatch", "ruff", "pre-commit"]
+test = ["pytest", "anyio", "pytest-cov", "pytest-mock"]
+per-kernel-widget-manager = [
+  "widgetsnbextension @ {root:uri}/pkg/widgetsnbextension-4.0.13-py3-none-any.whl",
+  "jupyterlab_widgets @ {root:uri}/pkg/jupyterlab_widgets-3.0.13-py3-none-any.whl",
+  "ipywidgets @ {root:uri}/pkg/ipywidgets-8.1.5-py3-none-any.whl",
+]
+
+[tool.hatch.version]
+source = "nodejs"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.metadata.hooks.nodejs]
+fields = ["description", "authors", "urls"]
+
+[tool.hatch.build.targets.sdist]
+artifacts = ["jupyterlab_rjsf/labextension"]
+exclude = [".github", "binder"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"jupyterlab_rjsf/labextension" = "share/jupyter/labextensions/jupyterlab-rjsf"
+
+[tool.hatch.build.targets.wheel.force-include]
+"jupyterlab_rjsf/labextension/package.json" = "jupyterlab_rjsf/labextension/package.json"
+
+
+[tool.hatch.build.hooks.jupyter-builder]
+dependencies = ["hatch-jupyter-builder>=0.5"]
+build-function = "hatch_jupyter_builder.npm_builder"
+ensured-targets = [
+  "jupyterlab_rjsf/labextension/static/style.js",
+  "jupyterlab_rjsf/labextension/package.json",
+]
+skip-if-exists = ["jupyterlab_rjsf/labextension/static/style.js"]
+
+[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
+build_cmd = "build:prod"
+npm = ["jlpm"]
+
+[tool.hatch.build.hooks.jupyter-builder.editable-build-kwargs]
+build_cmd = "install:extension"
+npm = ["jlpm"]
+source_dir = "src"
+build_dir = "jupyterlab_rjsf/labextension"
+
+[tool.hatch.envs.hatch-static-analysis]
+config-path = "ruff_defaults.toml"
+
+[tool.jupyter-releaser.options]
+version_cmd = "hatch version"
+
+[tool.jupyter-releaser.hooks]
+before-build-npm = ["pip install jupyterlab~=4.1", "jlpm", "jlpm build:prod"]
+before-build-python = ["jlpm clean:all"]
+
+[tool.check-wheel-contents]
+ignore = ["W002"]
+
+[tool.ruff]
+extend = "ruff_defaults.toml"
+target-version = "py311"
+src = ['docs']
+
+[tool.codespell]
+skip = 'yarn.lock,node_modules*,lib,.yarn*,./jupyterlab_rjsf*'
+ignore-words-list = 'statics'
+write = true
+
+[tool.ruff.lint]
+ignore = ["BLE001", "N803"]
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint.per-file-ignores]
+"tests*" = ['ARG002', 'SLF001', 'S101', 'PLR2004']
