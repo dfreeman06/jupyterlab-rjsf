@@ -8,7 +8,7 @@ import { RenderedMarkdown } from '@jupyterlab/rendermime';
 export class SchemaFormModel<T extends JSONValue> extends VDomModel {
   constructor(
     schema: RJSFSchema,
-    props?: Partial<rjsf.FormProps<T>>,
+    props?: Partial<rjsf.FormProps>,
     options?: SchemaFormModel.IOptions
   ) {
     super();
@@ -132,7 +132,7 @@ export class SchemaFormModel<T extends JSONValue> extends VDomModel {
   private _formData: T;
   private _errors: RJSFValidationError[] = [];
   private _schema: RJSFSchema;
-  private _props: Partial<rjsf.FormProps<T>>;
+  private _props: Partial<rjsf.FormProps>;
   private _errorsObserved = false;
   private _rendered = new Signal<SchemaFormModel<T>, void>(this);
   private _markdown: RenderedMarkdown | null;

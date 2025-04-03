@@ -2,8 +2,7 @@ import React from 'react';
 
 import * as rjsf from '@rjsf/core';
 import {
-  // RJSFValidationError, 
-  ErrorSchema
+  RJSFValidationError, 
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 
@@ -57,7 +56,7 @@ export class SchemaForm<T extends JSONValue = JSONValue> extends VDomRenderer<
    */
   constructor(
     schema: JSONObject,
-    props: Partial<rjsf.FormProps<T>> = {},
+    props: Partial<rjsf.FormProps> = {},
     options?: SchemaFormModel.IOptions
   ) {
     super(new SchemaFormModel<T>(schema, props, options));
@@ -81,25 +80,33 @@ export class SchemaForm<T extends JSONValue = JSONValue> extends VDomRenderer<
 
     const finalProps = {
       // props from model
-      // ...props,
+      ...props,
       // assure a default prefix
       idPrefix: this._idPrefix,
       schema,
       formData,
       // overload classname
       className,
-      // validate: (formData: T, errors: RJSFValidationError[]) => {
-      //   return errors;
-      // },
+      validate: (formData: T, errors: RJSFValidationError[]) => {
+        return errors;
+      },
       validator, 
       // overload onChange
-      // onChange: (evt: rjsf.IChangeEvent<T>, err?: ErrorSchema) => {
-      //   this.onChange(evt, err);
+      onChange: (data: rjsf.IChangeEvent<T>, id?: string) => {
+        this.onChange(data, id);
 
-      //   // if (props.onChange) {
-      //   //   props.onChange(evt, err);
-      //   // }
-      // },
+        if (props.onChange) {
+          props.onChange(data, id);
+        }
+      },
+      onError: (errors: RJSFValidationError[]) => {
+        console.log("errors", errors);
+        if (props.onError) {
+          props.onError(errors);
+        }
+      }
+
+      
     };
 
     setTimeout(this._postRender, 100);
@@ -110,7 +117,7 @@ export class SchemaForm<T extends JSONValue = JSONValue> extends VDomRenderer<
   /**
    * Handle the change of a form by the user and update the model
    */
-  onChange(evt: rjsf.IChangeEvent<T>, _err?: ErrorSchema) {
+  onChange(evt: rjsf.IChangeEvent<T>, id?: string) {
     const { formData, errors } = evt;
     if (formData != null) {
       this.model.errors = errors;

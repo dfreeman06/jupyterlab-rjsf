@@ -8,9 +8,10 @@ import { retrieveSchema } from '@rjsf/utils';
 /* ...then lib imports */
 import _ObjectField from '@rjsf/core/lib/components/fields/ObjectField';
 
-import { UnControlled } from 'react-codemirror2';
+import ReactCodeMirror from '@uiw/react-codemirror';
 
 import * as CodeMirror from 'codemirror';
+import type { ViewUpdate } from '@codemirror/view';
 
 import { JSONExt } from '@lumino/coreutils';
 
@@ -50,16 +51,16 @@ export function makeJSONObjectField(ObjectField: typeof _ObjectField) {
         title = schema.title === undefined ? name : schema.title;
       }
 
-      const isLight = !!document.querySelector('body[data-jp-theme-light="true"]');
+      // const isLight = !!document.querySelector('body[data-jp-theme-light="true"]');
 
       const description = uiSchema['ui:description'] || schema.description;
       const { canSave } = this;
 
       const options = {
-        mode: 'application/json',
-        theme: isLight ? 'default' : 'zenburn',
-        matchBrackets: true,
-        autoCloseBrackets: true,
+        // mode: 'application/json',
+        // theme: isLight ? 'default' : 'zenburn',
+        // matchBrackets: true,
+        // autoCloseBrackets: true,
       };
 
       return (
@@ -82,10 +83,10 @@ export function makeJSONObjectField(ObjectField: typeof _ObjectField) {
             ></button>
           </div>
           <div id={idSchema.$id}>
-            <UnControlled
-              editorDidMount={(editor) => (this._editor = editor)}
+            <ReactCodeMirror
+              // editorDidMount={(editor) => (this._editor = editor)}
               value={JSON.stringify(formData, null, 2)}
-              options={options}
+              {...options}
               onChange={this.onChange}
             />
           </div>
@@ -110,15 +111,15 @@ export function makeJSONObjectField(ObjectField: typeof _ObjectField) {
     onSave = () => {
       this.props.onChange(this.state.editorValue);
     };
-
-    onChange = (editor: CodeMirror.EditorView, data: any, value: string) => {
+    onChange =(value:string, viewUpdate:ViewUpdate) => {
       try {
         const jsonValue = JSON.parse(value);
         this.setState({ editorValue: jsonValue, editorError: false });
       } catch (err) {
         this.setState({ editorValue: null, editorError: true });
       }
-    };
+    }
+    
   }
 
   return JSONObjectField as any;

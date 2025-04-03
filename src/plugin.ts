@@ -20,7 +20,7 @@ const plugin: IPlugin<Application<Widget>, void> = {
       version: VERSION,
       exports: async () => {
         const widgetExports = {
-          ...(await import(/* webpackChunkName: "rjsfwidget" */ './widget')),
+          ...(await import(/* webpackChunkName: "rjsfwidget" */ './json-schema-form')),
 
         };
 

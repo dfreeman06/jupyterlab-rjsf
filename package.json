@@ -63,8 +63,8 @@
     "@jupyterlab/rendermime": "^4.3.6",
     "@rjsf/core": "~5.24.8",
     "@rjsf/validator-ajv8": "~5.24.8",
-    "codemirror": "^6.0.1",
-    "react-codemirror2": "^8.0.1"
+    "@uiw/react-codemirror": "^4.23.10",
+    "codemirror": "^6.0.1"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^4.3.6",

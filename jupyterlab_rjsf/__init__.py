@@ -1,4 +1,4 @@
-from .form import RJSForm
+from .widget_json_schema_form import JSONSchemaForm
 from ._version import __version__, version_info
 from .js import EXTENSION_NAME
 

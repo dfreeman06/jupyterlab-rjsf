@@ -27,7 +27,7 @@ export const CUSTOM_UI_FIELDS = async () => {
 /**
  * a subset of an RJSF props with all custom elements available
  */
-export const ALL_CUSTOM_UI = async (): Promise<Partial<FormProps<any>>> => {
+export const ALL_CUSTOM_UI = async (): Promise<Partial<FormProps>> => {
   return {
     fields: await CUSTOM_UI_FIELDS(),
     widgets: await CUSTOM_UI_WIDGETS(),

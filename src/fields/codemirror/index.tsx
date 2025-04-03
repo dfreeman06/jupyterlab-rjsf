@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { UnControlled } from 'react-codemirror2';
-import * as CodeMirror from 'codemirror';
+import ReactCodeMirror from '@uiw/react-codemirror';
+import type { ViewUpdate } from '@codemirror/view';
 export function CodeMirrorField(props: any) {
   const { options } = props;
 
@@ -10,19 +10,20 @@ export function CodeMirrorField(props: any) {
     ...(options?.cmOptions || {}),
   };
 
-  const onChange = (editor: CodeMirror.EditorView, data: any, value: string) => {
+  const onChange = React.useCallback((value:string, viewUpdate:ViewUpdate) => {
+    console.log('val:', value);
     props.onChange(value);
-  };
+  }, []);  
 
   return (
     <>
       <div>
-        <UnControlled
+        <ReactCodeMirror
           value={props.value}
-          options={cmOptions}
+          {...cmOptions}
           onChange={onChange}
-          autoCursor={false}
-          autoScroll={false}
+          // autoCursor={false}
+          // autoScroll={false}
         />
       </div>
     </>
