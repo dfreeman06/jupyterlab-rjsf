@@ -56,7 +56,7 @@ artifacts = ["jupyterlab_rjsf/labextension"]
 exclude = [".github", "binder"]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"jupyterlab_rjsf/labextension" = "share/jupyter/labextensions/jupyterlab-rjsf"
+"jupyterlab_rjsf/labextension" = "share/jupyter/labextensions/@polusai/jupyterlab-rjsf"
 
 [tool.hatch.build.targets.wheel.force-include]
 "jupyterlab_rjsf/labextension/package.json" = "jupyterlab_rjsf/labextension/package.json"

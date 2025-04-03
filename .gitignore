@@ -8,3 +8,4 @@ jupyterlab_rjsf/labextension/
 dist/
 .ipynb_checkpoints
 Untitled*.ipynb
+__pycache__/
